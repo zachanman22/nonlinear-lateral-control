@@ -1,6 +1,10 @@
+<<<<<<< Updated upstream
 
 %% RNG MANIP
 rng(42)
+=======
+rng(90)
+>>>>>>> Stashed changes
 
 %% Parameters Control
 Cf = 60000;
@@ -48,6 +52,7 @@ for i = 2:length(tspan)
     % delta(i-1) = sontagController(state(:,i-1), parameters);
     % delta(i-1) = boundedSontagController(state(:,i-1), parameters);
     % delta(i-1) = backsteppingController(state(:,i-1), parameters);
+<<<<<<< Updated upstream
     % delta(i-1) = backsteppingController2(state(:,i-1), parameters);
     % delta(i-1) = backsteppingController3(state(:,i-1), parameters);
     delta(i-1) = linearController(state(:,i-1), parameters);
@@ -69,6 +74,19 @@ for i = 2:length(tspan)
     state(3, i) = state(3, i-1) + dt * (state(4, i-1));
     state(4, i) = state(4, i-1) + dt * (-lf*Cf/I*(state(2, i-1) + state(4, i-1)*lf)/Vx + lr*Cr/I*(state(2, i-1) - state(4, i-1)*lr)/Vx + lf*Cf/I*delta(i-1));
     state(5, i) = state(5, i-1) + dt * Vx;
+=======
+    delta(i-1) = backsteppingController2(state(:,i-1), parameters);
+    % delta(i-1) = backsteppingController3(state(:,i-1), parameters);
+    % delta(i-1) = optimalController(state(:,i-1), parameters, dt);
+    state(1,i) = state(1,i-1) + dt * (Vx * sin(state(3,i-1)) + state(2,i-1) * cos(state(3,i-1)));
+    state(2,i) = state(2,i-1) + dt * (-Vx * state(4,i-1) - ...
+        Cf / m * (atan2(state(2,i-1) + state(4,i-1) * lf, Vx) - delta(i-1)) * cos(delta(i-1)) - ...
+        Cr / m * atan2(state(2,i-1) - state(4,i-1) * lr, Vx));
+    state(3,i) = state(3,i-1) + dt * (state(4,i-1));
+    state(4,i) = state(4,i-1) + dt * (-lf * Cf / I * (atan2(state(2,i-1) + state(4,i-1) * lf, Vx) - delta(i-1)) + ...
+        lr * Cr / I * atan2(state(2,i-1) - state(4,i-1) * lr, Vx));
+    state(5,i) = state(5,i-1) + dt * (Vx * cos(state(3,i-1)) + state(2,i-1) * sin(state(3,i-1)));
+>>>>>>> Stashed changes
 end
 
 figure(1)
@@ -90,6 +108,9 @@ plot(tspan, delta)
 figure(4)
 plot(tspan, atan2(state(2,:),Vx))
 
+finalSquareCost = Jsquare(state, dt);
+finalAbsoluteCost = Jabsolute(state, dt);
+[minAbsoluteError, maxAbsoluteError] = Jextremes(state);
 
 % state(2,i) = state(2,i-1) + dt * (-Vx * state(4,i-1) - ...
 % Cf / m * atan((state(2,i-1) + state(4,i-1) * lf) / Vx) - ...
